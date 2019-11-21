@@ -7,10 +7,13 @@ let players=[];
 let turn=0;
 let clicked=false;
 let noOfplayers;
+let computer;
+let computerScore=0;
+let computerTurn=false;
 function setup(){
     createCanvas(800,850);
-    rows=600/size;
-    cols=600/size;
+    rows=300/size;
+    cols=300/size;
     for(let i=0;i<rows;i++){
         for(let j=0;j<cols;j++){
             cells.push(new Cell(i,j));
@@ -18,7 +21,9 @@ function setup(){
     }
     do{    
         noOfplayers=parseInt(prompt("Enter the Number of player (2-7)",2));
-    }while(noOfplayers<2 || noOfplayers>7);
+    }while(noOfplayers<1 || noOfplayers>7);
+    if(noOfplayers==1)
+        computer=true;
     for(let i=0;i<noOfplayers;i++){
         players.push(new Player(colors[i]));
     }
@@ -32,10 +37,163 @@ function displayScores(){
     for(let i in players){
         stroke(players[i].color[0],players[i].color[1],players[i].color[2]);
         fill(players[i].color[0],players[i].color[1],players[i].color[2]);
-        rect(x,y,40,40);
-        textSize(30);
-        text("- "+players[i].score,x+70,y+30);
+        if(computer){
+            text("Human",x+20,y+28);
+            textSize(30);
+            text("- "+players[i].score,x+90,y+30);
+        }
+        else{
+            rect(x,y,40,40);
+            textSize(30);
+            text("- "+players[i].score,x+70,y+30);
+        }
         x+=110;
+    }
+    if(computer){
+        stroke(colors[1][0],colors[1][1],colors[1][2]);
+        fill(colors[1][0],colors[1][1],colors[1][2]);
+        text("Computer",x+90,y+28);
+        // rect(x,y,40,40);
+        textSize(30);
+        text("- "+computerScore,x+180,y+30);
+    }
+}
+function setBorderCounts(){
+    for(let i in cells){
+        let count=0;
+        for(let j in cells[i].borders){
+            if(cells[i].borders[j].status)
+                count++;
+        }
+        cells[i].count=count;
+    }
+}
+function computerPlay(){
+    setBorderCounts();
+    let found=false;
+    for(let i in cells){
+        if(cells[i].count==3){
+            for(let j in cells[i].borders){
+                if(!cells[i].borders[j].status){
+                    cells[i].borders[j].status=true;
+                    cells[i].borders[j].color=colors[1];
+                    cells[i].rounded=true;
+                    found=true;
+                    computerScore++;
+                    cells[i].color=colors[1];
+                    for(let k in cells){
+                        if(cells[k]!=cells[i]){
+                            for(let l in cells[k].borders){
+                                if(cells[k].borders[l].x1==cells[i].borders[j].x1 && cells[k].borders[l].y1==cells[i].borders[j].y1 && cells[k].borders[l].x2==cells[i].borders[j].x2 && cells[k].borders[l].y2==cells[i].borders[j].y2){
+                                    // console.log(cells[i],cells[k]);
+                                    cells[k].borders[l].status=true;
+                                    cells[k].borders[l].color=colors[1];
+                                    if(cells[k].count==3){
+                                        cells[k].rounded=true;
+                                        computerScore++;
+                                        cells[k].color=colors[1];          
+                                    }
+                                    computerPlay();
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    computerPlay();
+                    return;
+                }
+            }
+        }
+    }
+    for(let i in cells){
+        if(cells[i].count==0){
+            for(let j in cells[i].borders){
+                let good=true;
+                for(let k in cells){
+                    if(cells[k].count==2){
+                        for(let l in cells[k].borders){
+                            if(cells[i].borders[j].x1==cells[k].borders[l].x1 && cells[i].borders[j].y1==cells[k].borders[l].y1 && cells[i].borders[j].x2==cells[k].borders[l].x2 && cells[i].borders[j].y2==cells[k].borders[l].y2){
+                                good=false;
+                            }
+                        }
+                    }
+                }
+                if(good){
+                    cells[i].borders[j].status=true;
+                    cells[i].borders[j].color=colors[1];
+                    for(let k in cells){
+                        for(let l in cells[k].borders){
+                            if(cells[i].borders[j].x1==cells[k].borders[l].x1 && cells[i].borders[j].y1==cells[k].borders[l].y1 && cells[i].borders[j].x2==cells[k].borders[l].x2 && cells[i].borders[j].y2==cells[k].borders[l].y2){
+                                cells[k].borders[l].status=true;
+                                cells[k].borders[l].color=colors[1];
+                            }
+                        }
+                    }   
+                    return;
+                }
+            }
+        }
+    }
+    for(let i in cells){
+        if(cells[i].count==1){
+            for(let j in cells[i].borders){
+                if(cells[i].borders[j].status){
+                    continue;
+                }
+                let good=true;
+                for(let k in cells){
+                    if(cells[k].count==2){
+                        for(let l in cells[k].borders){
+                            if(cells[i].borders[j].x1==cells[k].borders[l].x1 && cells[i].borders[j].y1==cells[k].borders[l].y1 && cells[i].borders[j].x2==cells[k].borders[l].x2 && cells[i].borders[j].y2==cells[k].borders[l].y2){
+                                good=false;
+                            }
+                        }
+                    }
+                }
+                if(good){
+                    cells[i].borders[j].status=true;
+                    cells[i].borders[j].color=colors[1];
+                    for(let k in cells){
+                        for(let l in cells[k].borders){
+                            if(cells[i].borders[j].x1==cells[k].borders[l].x1 && cells[i].borders[j].y1==cells[k].borders[l].y1 && cells[i].borders[j].x2==cells[k].borders[l].x2 && cells[i].borders[j].y2==cells[k].borders[l].y2){
+                                cells[k].borders[l].status=true;
+                                cells[k].borders[l].color=colors[1];
+                            }
+                        }
+                    }   
+                    return;
+                }
+            }
+        }
+    }
+    for(let i in cells){
+        if(cells[i].count==2){
+            for(let j in cells[i].borders){
+                if(!cells[i].borders[j].status){
+                    cells[i].borders[j].status=true;
+                    cells[i].borders[j].color=colors[1];
+                    for(let k in cells){
+                        for(let l in cells[k].borders){
+                            if(cells[i].borders[j].x1==cells[k].borders[l].x1 && cells[i].borders[j].y1==cells[k].borders[l].y1 && cells[i].borders[j].x2==cells[k].borders[l].x2 && cells[i].borders[j].y2==cells[k].borders[l].y2){
+                                cells[k].borders[l].status=true;
+                                cells[k].borders[l].color=colors[1];
+                            }
+                        }
+                    }
+                    return; 
+                }
+            }
+        }
+    }
+    if(isGameFinished()){
+        if(players[0].score>computerScore){
+            alert("Human won!!!");
+        }
+        else{
+            alert("Computer Won!!");
+        }
+        noLoop();
+        return;
     }
 }
 function draw(){
@@ -75,24 +233,40 @@ function mousePressed(){
                 cells[j].color=players[turn].color;
                 players[turn].addScore();
                 if(isGameFinished()){
-                    let maxScore=0;
-                    let winner;
-                    let winnerNo;
-                    for(let i in players){
-                        if(players[i].score>maxScore){
-                            maxScore=players[i].score;
-                            winner=players[i];
-                            winnerNo=parseInt(i)+1;
+                    if(computer){
+                        if(players[0].score>computerScore){
+                            alert("Human won!!!");
+                        }
+                        else{
+                            alert("Computer Won!!");
                         }
                     }
-                    alert("Player "+(winnerNo)+" Won the Game");
+                    else{
+                        let maxScore=0;
+                        let winner;
+                        let winnerNo;
+                        for(let i in players){
+                            if(players[i].score>maxScore){
+                                maxScore=players[i].score;
+                                winner=players[i];
+                                winnerNo=parseInt(i)+1;
+                            }
+                        }
+                        alert("Player "+(winnerNo)+" Won the Game");
+                    }
                     noLoop();
                     return;
                 }
             }
         }
-        if(!found)   
-            turn=(turn+1)%players.length;
+        if(computer){
+            if(!found)   
+                computerPlay();
+        }
+        else{
+            if(!found)   
+                turn=(turn+1)%players.length;
+        }
     }
     clicked=false;
 }

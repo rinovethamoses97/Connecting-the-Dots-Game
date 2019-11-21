@@ -11,6 +11,7 @@ class Cell{
         this.borders.push(new Border(this.x,this.y,this.x,this.y+size,1,this.x,this.y+size));
         this.rounded=false;
         this.color=null;
+        this.count=0;
     }
     show(){
         for(let i=0;i<this.borders.length;i++){
