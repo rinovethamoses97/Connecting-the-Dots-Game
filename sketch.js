@@ -12,8 +12,8 @@ let computerScore=0;
 let computerTurn=false;
 function setup(){
     createCanvas(800,850);
-    rows=300/size;
-    cols=300/size;
+    rows=600/size;
+    cols=600/size;
     for(let i=0;i<rows;i++){
         for(let j=0;j<cols;j++){
             cells.push(new Cell(i,j));
