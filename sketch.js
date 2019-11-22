@@ -11,9 +11,9 @@ let computer;
 let computerScore=0;
 let computerTurn=false;
 function setup(){
-    createCanvas(800,850);
-    rows=600/size;
-    cols=600/size;
+    createCanvas(700,750);
+    rows=500/size;
+    cols=500/size;
     for(let i=0;i<rows;i++){
         for(let j=0;j<cols;j++){
             cells.push(new Cell(i,j));
@@ -32,30 +32,30 @@ function displayScores(){
     textSize(30);
     textAlign(CENTER);
     text("SCORE",width/2,30);
-    let x=40;
+    let x=30;
     let y=50;
     for(let i in players){
         stroke(players[i].color[0],players[i].color[1],players[i].color[2]);
         fill(players[i].color[0],players[i].color[1],players[i].color[2]);
         if(computer){
-            text("Human",x+20,y+28);
+            text("Human",x+30,y+28);
             textSize(30);
-            text("- "+players[i].score,x+90,y+30);
+            text("- "+players[i].score,x+100,y+30);
         }
         else{
             rect(x,y,40,40);
             textSize(30);
-            text("- "+players[i].score,x+70,y+30);
+            text("- "+players[i].score,x+65,y+30);
         }
-        x+=110;
+        x+=95;
     }
     if(computer){
         stroke(colors[1][0],colors[1][1],colors[1][2]);
         fill(colors[1][0],colors[1][1],colors[1][2]);
-        text("Computer",x+90,y+28);
+        text("Computer",x+100,y+28);
         // rect(x,y,40,40);
         textSize(30);
-        text("- "+computerScore,x+180,y+30);
+        text("- "+computerScore,x+190,y+30);
     }
 }
 function setBorderCounts(){
