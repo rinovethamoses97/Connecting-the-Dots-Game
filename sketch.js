@@ -20,7 +20,7 @@ function setup(){
         }
     }
     do{    
-        noOfplayers=parseInt(prompt("Enter the Number of player (2-7)",2));
+        noOfplayers=parseInt(prompt("Enter the Number of player (1-7)",1));
     }while(noOfplayers<1 || noOfplayers>7);
     if(noOfplayers==1)
         computer=true;
@@ -166,21 +166,46 @@ function computerPlay(){
             }
         }
     }
+    let cellNo;
+    let borderNo;
+    let maxScore=999;
+    let haveCountTwo=false;
     for(let i in cells){
         if(cells[i].count==2){
+            haveCountTwo=true;
             for(let j in cells[i].borders){
                 if(!cells[i].borders[j].status){
-                    cells[i].borders[j].status=true;
-                    cells[i].borders[j].color=colors[1];
-                    for(let k in cells){
-                        for(let l in cells[k].borders){
-                            if(cells[i].borders[j].x1==cells[k].borders[l].x1 && cells[i].borders[j].y1==cells[k].borders[l].y1 && cells[i].borders[j].x2==cells[k].borders[l].x2 && cells[i].borders[j].y2==cells[k].borders[l].y2){
-                                cells[k].borders[l].status=true;
-                                cells[k].borders[l].color=colors[1];
+                    let cellCopy=JSON.parse(JSON.stringify(cells));
+                    cellCopy[i].borders[j].status=true;
+                    for(let m in cellCopy){
+                        for(let n in cellCopy[m].borders){
+                            if(cellCopy[i].borders[j].x1==cellCopy[m].borders[n].x1 && cellCopy[i].borders[j].y1==cellCopy[m].borders[n].y1 && cellCopy[i].borders[j].x2==cellCopy[m].borders[n].x2 && cellCopy[i].borders[j].y2==cellCopy[m].borders[n].y2){
+                                cellCopy[m].borders[n].status=true;
+                                break;
                             }
+
                         }
                     }
-                    return; 
+                    let score=getOpponentScore(cellCopy);
+                    console.log(i,score);
+                    if(score<maxScore){
+                        maxScore=score;
+                        cellNo=i;
+                        borderNo=j;
+                    }
+                }
+            }
+        }
+    }
+    if(haveCountTwo){
+        cells[cellNo].borders[borderNo].status=true;
+        cells[cellNo].borders[borderNo].color=colors[1];
+        console.log(cellNo);
+        for(let k in cells){
+            for(let l in cells[k].borders){
+                if(cells[cellNo].borders[borderNo].x1==cells[k].borders[l].x1 && cells[cellNo].borders[borderNo].y1==cells[k].borders[l].y1 && cells[cellNo].borders[borderNo].x2==cells[k].borders[l].x2 && cells[cellNo].borders[borderNo].y2==cells[k].borders[l].y2){
+                    cells[k].borders[l].status=true;
+                    cells[k].borders[l].color=colors[1];
                 }
             }
         }
@@ -195,6 +220,7 @@ function computerPlay(){
         noLoop();
         return;
     }
+    return; 
 }
 function draw(){
     background(0);
@@ -276,4 +302,47 @@ function isGameFinished(){
             return false;
     }
     return true;
+}
+function getOpponentScore(cellCopy){
+    let score=0;
+    for(let i in cellCopy){
+        let count=0;
+        for(let j in cellCopy[i].borders){
+            if(cellCopy[i].borders[j].status)
+                count++;
+        }
+        cellCopy[i].count=count;
+    }
+    let found=true;
+    while(found){
+        let flag=false;
+        for(let i in cellCopy){
+            if(cellCopy[i].count==3){
+                score++;
+                flag=true;
+                for(let j in cellCopy[i].borders){
+                    if(!cellCopy[i].borders[j].status){
+                        cellCopy[i].borders[j].status=true;
+                        cellCopy[i].count++;
+                        for(let m in cellCopy){
+                            for(let n in cellCopy[m].borders){
+                                if(cellCopy[i].borders[j].x1==cellCopy[m].borders[n].x1 && cellCopy[i].borders[j].y1==cellCopy[m].borders[n].y1 && cellCopy[i].borders[j].x2==cellCopy[m].borders[n].x2 && cellCopy[i].borders[j].y2==cellCopy[m].borders[n].y2){
+                                    cellCopy[m].borders[n].status=true;
+                                    cellCopy[m].count++;
+                                    break;
+                                }
+    
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            if(flag)
+                break;
+        }
+        if(!flag)
+            found=false;
+    }
+    return score;
 }
