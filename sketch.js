@@ -187,7 +187,7 @@ function computerPlay(){
                         }
                     }
                     let score=getOpponentScore(cellCopy);
-                    console.log(i,score);
+                    // console.log(i,score);
                     if(score<maxScore){
                         maxScore=score;
                         cellNo=i;
@@ -200,7 +200,7 @@ function computerPlay(){
     if(haveCountTwo){
         cells[cellNo].borders[borderNo].status=true;
         cells[cellNo].borders[borderNo].color=colors[1];
-        console.log(cellNo);
+        // console.log(cellNo);
         for(let k in cells){
             for(let l in cells[k].borders){
                 if(cells[cellNo].borders[borderNo].x1==cells[k].borders[l].x1 && cells[cellNo].borders[borderNo].y1==cells[k].borders[l].y1 && cells[cellNo].borders[borderNo].x2==cells[k].borders[l].x2 && cells[cellNo].borders[borderNo].y2==cells[k].borders[l].y2){
