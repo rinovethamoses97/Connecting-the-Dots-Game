@@ -230,6 +230,7 @@ function draw(){
     displayScores();
 }
 function mousePressed(){
+    clicked=false;
     for(let j in cells){        
         for(let i in cells[j].borders){
             if(cells[j].borders[i].isClicked(mouseX,mouseY) && cells[j].borders[i].status==false){
@@ -294,7 +295,6 @@ function mousePressed(){
                 turn=(turn+1)%players.length;
         }
     }
-    clicked=false;
 }
 function isGameFinished(){
     for(let i in cells){
