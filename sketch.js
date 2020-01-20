@@ -20,7 +20,7 @@ function setup(){
         }
     }
     do{    
-        noOfplayers=parseInt(prompt("Enter the Number of player (1-7)",1));
+        noOfplayers=parseInt(prompt("Enter the Number of player (1-7)(Select '1' to play against the computer)",1));
     }while(noOfplayers<1 || noOfplayers>7);
     if(noOfplayers==1)
         computer=true;
